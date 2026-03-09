@@ -1,0 +1,27 @@
+# templates/limitrange.yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: {{ .Values.name }}-limitrange
+spec:
+  limits:
+    - type: Pod
+      max:
+        cpu: {{ .Values.contianer.cpuLim }}
+        memory: {{ .Values.contianer.memoryLim }}
+      min:
+        cpu: {{ .Values.contianer.cpuReq }}
+        memory: {{ .Values.contianer.memoryReq }}
+    - type: Container
+      default:
+        cpu: {{ .Values.contianer.cpuLim }}
+        memory: {{ .Values.contianer.memoryLim }}
+      defaultRequest:
+        cpu: {{ .Values.contianer.cpuReq }}
+        memory: {{ .Values.contianer.memoryReq }}
+      max:
+        cpu: {{ .Values.contianer.cpuLim }}
+        memory: {{ .Values.contianer.memoryLim }}
+      min:
+        cpu: {{ .Values.contianer.cpuReq }}
+        memory: {{ .Values.contianer.memoryReq }}

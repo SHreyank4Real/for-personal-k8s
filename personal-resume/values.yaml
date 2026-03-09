@@ -1,0 +1,32 @@
+replicaCount: 1
+
+name: shreyank-resume
+
+image:
+  repository: shreyanksharma
+  name: shreyankresume
+  pullPolicy: IfNotPresent
+  tag: "09-03-2026-e2f9b816-b874-4e96-be1c-6bb7938f5ea8"
+
+imagePullSecrets: []
+
+contianer:
+  port: 80
+  memoryReq: "32Mi"
+  memoryLim: "64Mi"
+  cpuReq: "10m"
+  cpuLim: "20m"
+
+service:
+  type: NodePort
+  nodePortPort: 30002
+
+volumes: []
+
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

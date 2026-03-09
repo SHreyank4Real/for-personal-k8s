@@ -1,0 +1,12 @@
+# templates/resourcequota.yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ .Values.name }}-quota
+spec:
+  hard:
+    pods: "{{ .Values.replicaCount }}"
+    requests.cpu: {{ .Values.contianer.cpuReq }}
+    requests.memory: {{ .Values.contianer.memoryReq }}
+    limits.cpu: {{ .Values.contianer.cpuLim }}
+    limits.memory: {{ .Values.contianer.memoryLim }}

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    app: {{ .Values.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      containers:
+        - name: resume
+          image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.contianer.port }}
+          resources:
+            requests:
+              cpu: {{ .Values.contianer.cpuReq }}
+              memory: {{ .Values.contianer.memoryReq }}
+            limits:
+              cpu: {{ .Values.contianer.cpuLim }}
+              memory: {{ .Values.contianer.memoryLim }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.contianer.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.contianer.port }}
+            initialDelaySeconds: 3
+            periodSeconds: 5
