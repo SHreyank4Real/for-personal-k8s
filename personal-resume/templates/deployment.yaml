@@ -31,11 +31,11 @@ spec:
             httpGet:
               path: /
               port: {{ .Values.contianer.port }}
-            initialDelaySeconds: 5
+            initialDelaySeconds: 15
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /
               port: {{ .Values.contianer.port }}
-            initialDelaySeconds: 3
+            initialDelaySeconds: 15
             periodSeconds: 5

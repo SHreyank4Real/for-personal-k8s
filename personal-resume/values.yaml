@@ -14,8 +14,8 @@ contianer:
   port: 80
   memoryReq: "32Mi"
   memoryLim: "64Mi"
-  cpuReq: "10m"
-  cpuLim: "20m"
+  cpuReq: "50m"
+  cpuLim: "100m"
 
 service:
   type: NodePort
