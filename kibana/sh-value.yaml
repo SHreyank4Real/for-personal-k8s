@@ -1,0 +1,62 @@
+# ===============================================================
+# Kibana - Final Config
+# Chart: elastic/kibana v8.5.1
+# Namespace: elastic
+# NodePort: 30004
+# ===============================================================
+
+replicas: 1
+
+# Point to Elasticsearch service inside cluster
+elasticsearchHosts: "http://elasticsearch-master.logging.svc.cluster.local:9200"
+
+kibanaConfig:
+  kibana.yml: |
+    server.host: "0.0.0.0"
+    server.publicBaseUrl: "https://kibana.yourdomain.com"
+    elasticsearch.hosts: ["http://elasticsearch-master.logging.svc.cluster.local:9200"]
+    xpack.security.enabled: false
+    xpack.encryptedSavedObjects.encryptionKey: "shreyank-kibana-32-char-key-here!"
+    monitoring.ui.container.elasticsearch.enabled: true
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+# Expose via NodePort 30004
+service:
+  type: NodePort
+  nodePort: 30004
+  port: 5601
+
+# Give ES time to be ready before Kibana starts
+readinessProbe:
+  failureThreshold: 10
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  successThreshold: 3
+  timeoutSeconds: 5
+
+livenessProbe:
+  failureThreshold: 10
+  initialDelaySeconds: 90
+  periodSeconds: 20
+  timeoutSeconds: 5
+
+# Wait for ES to be available before Kibana starts
+extraInitContainers:
+  - name: wait-for-elasticsearch
+    image: busybox
+    command:
+      - sh
+      - -c
+      - |
+        until wget -qO- http://elasticsearch-master.elastic.svc.cluster.local:9200; do
+          echo "Waiting for Elasticsearch..."
+          sleep 5
+        done
+        echo "Elasticsearch is ready!"

@@ -1,0 +1,73 @@
+# ===============================================================
+# Elasticsearch - Final Config
+# Chart: elastic/elasticsearch v8.5.1
+# Namespace: elastic
+# NodePort: 30003
+# ===============================================================
+
+clusterName: shreyank-elk
+nodeGroup: master
+
+replicas: 1
+minimumMasterNodes: 1
+
+esConfig:
+  elasticsearch.yml: |
+    cluster.name: shreyank-elk
+    network.host: 0.0.0.0
+    discovery.type: single-node
+    xpack.security.enabled: false
+    xpack.security.transport.ssl.enabled: false
+    xpack.security.http.ssl.enabled: false
+
+protocol: http
+
+extraEnvs:
+  - name: discovery.type
+    value: single-node
+  - name: ES_JAVA_OPTS
+    value: "-Xms512m -Xmx512m"
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+
+# Disable PVC for k3d dev setup
+persistence:
+  enabled: false
+
+# Expose via NodePort 30003
+service:
+  type: NodePort
+  nodePort: 30003
+  port: 9200
+  transportPort: 9300
+
+# Disable vm.max_map_count check (required for k3d/Docker)
+sysctlInitContainer:
+  enabled: false
+
+# Disable mmap (required for k3d/Docker)
+esJavaOpts: "-Xms512m -Xmx512m"
+
+# Soft anti-affinity — won't force spread on single node
+antiAffinity: "soft"
+
+# Readiness probe — give ES time to start
+readinessProbe:
+  failureThreshold: 10
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  successThreshold: 3
+  timeoutSeconds: 5
+
+# Liveness probe
+livenessProbe:
+  failureThreshold: 10
+  initialDelaySeconds: 60
+  periodSeconds: 20
+  timeoutSeconds: 5
