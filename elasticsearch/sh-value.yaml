@@ -1,22 +1,17 @@
-# ===============================================================
-# Elasticsearch - Final Config
-# Chart: elastic/elasticsearch v8.5.1
-# Namespace: elastic
-# NodePort: 30003
-# ===============================================================
-
 clusterName: shreyank-elk
 nodeGroup: master
 
 replicas: 1
 minimumMasterNodes: 1
 
+masterService: ""
+
 esConfig:
   elasticsearch.yml: |
     cluster.name: shreyank-elk
     network.host: 0.0.0.0
     discovery.type: single-node
-    xpack.security.enabled: false
+    xpack.security.enabled: true
     xpack.security.transport.ssl.enabled: false
     xpack.security.http.ssl.enabled: false
 
@@ -27,6 +22,22 @@ extraEnvs:
     value: single-node
   - name: ES_JAVA_OPTS
     value: "-Xms512m -Xmx512m"
+  - name: ELASTIC_PASSWORD
+    value: "elasticsearchtest!"
+
+roles:
+  - master
+  - data
+  - data_content
+  - data_hot
+  - data_warm
+  - data_cold
+  - ingest
+  - ml
+  - remote_cluster_client
+  - transform
+
+esJavaOpts: "-Xms512m -Xmx512m"
 
 resources:
   requests:
@@ -36,28 +47,32 @@ resources:
     cpu: 1000m
     memory: 2Gi
 
-# Disable PVC for k3d dev setup
 persistence:
-  enabled: false
+  enabled: true
+  labels:
+    enabled: false
+  annotations: {}
 
-# Expose via NodePort 30003
+volumeClaimTemplate:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 20Gi
+
 service:
   type: NodePort
   nodePort: 30003
   port: 9200
   transportPort: 9300
 
-# Disable vm.max_map_count check (required for k3d/Docker)
+
 sysctlInitContainer:
   enabled: false
 
-# Disable mmap (required for k3d/Docker)
-esJavaOpts: "-Xms512m -Xmx512m"
-
-# Soft anti-affinity — won't force spread on single node
 antiAffinity: "soft"
 
-# Readiness probe — give ES time to start
+clusterHealthCheckParams: "wait_for_status=yellow&timeout=1s"
+
 readinessProbe:
   failureThreshold: 10
   initialDelaySeconds: 30
@@ -65,7 +80,6 @@ readinessProbe:
   successThreshold: 3
   timeoutSeconds: 5
 
-# Liveness probe
 livenessProbe:
   failureThreshold: 10
   initialDelaySeconds: 60
