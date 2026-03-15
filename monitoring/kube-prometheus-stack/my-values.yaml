@@ -1,0 +1,87 @@
+# ============================================================
+# Custom Values for kube-prometheus-stack
+# Prometheus & Grafana exposed via NodePort for local access
+# ============================================================
+
+# ----------------------------
+# Grafana
+# ----------------------------
+grafana:
+  enabled: true
+  adminPassword: "password" 
+
+  service:
+    type: NodePort
+    nodePort: 32000  
+
+  persistence:
+    enabled: true
+
+  grafana.ini:
+    server:
+      root_url: "http://localhost:32000"
+
+# ----------------------------
+# Prometheus
+# ----------------------------
+prometheus:
+  enabled: true
+
+  service:
+    type: NodePort
+    nodePort: 32090
+
+  prometheusSpec:
+    retention: 10d
+    resources:
+      requests:
+        cpu: 200m
+        memory: 400Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+
+    # Scrape all namespaces by default
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+
+# ----------------------------
+# Alertmanager
+# ----------------------------
+alertmanager:
+  enabled: true
+
+  service:
+    type: NodePort
+    nodePort: 32093
+
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+
+# ----------------------------
+# Node Exporter
+# ----------------------------
+nodeExporter:
+  enabled: true
+
+# ----------------------------
+# Kube State Metrics
+# ----------------------------
+kubeStateMetrics:
+  enabled: true
+
+# ----------------------------
+# Prometheus Operator
+# ----------------------------
+prometheusOperator:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
