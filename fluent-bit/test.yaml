@@ -35,14 +35,16 @@ config:
     [INPUT]
         Name           tail
         Path           /var/log/containers/shreyank-resume-*.log
-        Tag            nginx.logs
+        Tag            kube.var.log.containers.shreyank-resume-*
+        Tag_Regex      (?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Mem_Buf_Limit  5MB
         Skip_Long_Lines On
 
   filters: |
     [FILTER]
         Name                kubernetes
-        Match               nginx.logs
+        Match               kube.var.log.containers.shreyank-resume-*
+        Kube_Tag_Prefix     kube.var.log.containers.
         Merge_Log           On
         Keep_Log            Off
         K8S-Logging.Parser  On
@@ -50,12 +52,12 @@ config:
 
     [FILTER]
         Name    grep
-        Match   nginx.logs
+        Match   kube.var.log.containers.shreyank-resume-*
         Exclude log /.*(kube-probe|HealthCheck|Health).*/
 
     [FILTER]
         Name         parser
-        Match        nginx.logs
+        Match        kube.var.log.containers.shreyank-resume-*
         Key_Name     log
         Parser       nginx
         Reserve_Data True
@@ -63,10 +65,12 @@ config:
   outputs: |
     [OUTPUT]
         Name                es
-        Match               nginx.logs
+        Match               kube.var.log.containers.shreyank-resume-*
         Host                elastic-svc
         Port                9200
-        Index               resume-logs
+        Logstash_Format     On
+        Logstash_Prefix     resume-logs
+        Logstash_DateFormat %m-%Y
         Type                _doc
         Suppress_Type_Name  On
         Pipeline            geoip-info
