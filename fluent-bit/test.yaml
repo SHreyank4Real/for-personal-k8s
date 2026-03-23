@@ -1,0 +1,58 @@
+config:
+  service: |
+    [SERVICE]
+        Flush 1
+        Log_Level info
+        Parsers_File parsers.conf
+
+  inputs: |
+    [INPUT]
+        Name tail
+        Path /var/log/containers/shreyank-resume-*.log
+        Tag  nginx.logs
+        Mem_Buf_Limit 5MB
+        Skip_Long_Lines On
+
+  filters: |
+    # 1. Extract Kubernetes Metadata
+    [FILTER]
+        Name kubernetes
+        Match nginx.logs
+        Merge_Log On
+        Keep_Log Off
+
+    # 2. Exclude Kubernetes Liveness/Readiness Probes
+    [FILTER]
+        Name    grep
+        Match   nginx.logs
+        Exclude log /.*kube-probe.*/
+
+    # 3. Parse Nginx logs to get the 'remote_addr' (Client IP)
+    [FILTER]
+        Name parser
+        Match nginx.logs
+        Key_Name log
+        Parser nginx
+        Reserve_Data True
+
+  outputs: |
+    [OUTPUT]
+        Name  es
+        Match nginx.logs
+        Host  elastic-svc
+        Port  9200
+        Index resume-logs
+        Type  _doc
+        Suppress_Type_Name On
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 64Mi
+
+
+tolerations:
+  - operator: Exists
