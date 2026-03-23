@@ -1,5 +1,14 @@
 hostPathMounts: []
 
+extraVolumes:
+  - name: etcmachineid
+    emptyDir: {}
+
+extraVolumeMounts:
+  - name: etcmachineid
+    mountPath: /etc/machine-id
+    readOnly: true
+
 config:
   service: |
     [SERVICE]
@@ -18,7 +27,6 @@ config:
         Skip_Long_Lines On
 
   filters: |
-    # 1. Extract Kubernetes Metadata
     [FILTER]
         Name                kubernetes
         Match               nginx.logs
@@ -30,7 +38,7 @@ config:
     [FILTER]
         Name    grep
         Match   nginx.logs
-        Exclude log /.*(kube-probe|HealthCheck|Health).* /
+        Exclude log /.*(kube-probe|HealthCheck|Health).*/
 
     [FILTER]
         Name         parser
@@ -48,7 +56,7 @@ config:
         Index               resume-logs
         Type                _doc
         Suppress_Type_Name  On
-        Pipeline           geoip-info
+        Pipeline            geoip-info
 
 resources:
   limits:
