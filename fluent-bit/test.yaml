@@ -35,21 +35,20 @@ config:
     [INPUT]
         Name           tail
         Path           /var/log/containers/shreyank-resume-*.log
-        Tag            kube.*
-        Tag_Regex      var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
+        Tag            kube.var.log.containers.*
         Mem_Buf_Limit  5MB
         Skip_Long_Lines On
   filters: |
     [FILTER]
         Name             parser
-        Match            kube.*
+        Match            kube.var.log.containers.*
         Key_Name         log
         Parser           cri
         Reserve_Data     True
 
     [FILTER]
         Name                kubernetes
-        Match               kube.*
+        Match               kube.var.log.containers.*
         Kube_Tag_Prefix     kube.var.log.containers.
         Merge_Log           On
         Keep_Log            Off
@@ -58,12 +57,12 @@ config:
 
     [FILTER]
         Name    grep
-        Match   kube.*
+        Match   kube.var.log.containers.*
         Exclude log kube-probe
 
     [FILTER]
         Name         parser
-        Match        kube.*
+        Match        kube.var.log.containers.*
         Key_Name     log
         Parser       nginx
         Reserve_Data True
@@ -71,7 +70,7 @@ config:
   outputs: |
     [OUTPUT]
         Name                es
-        Match               kube.*
+        Match               kube.var.log.containers.*
         Host                elastic-svc
         Port                9200
         Logstash_Format     On
