@@ -6,7 +6,7 @@ image:
   repository: shreyanksharma
   name: shreyankresume
   pullPolicy: IfNotPresent
-  tag: "09-03-2026-e2f9b816-b874-4e96-be1c-6bb7938f5ea8"
+  tag: "27-03-2026-732b0ade-1fb6-4d6a-b78c-b10c0ab00129"
 
 imagePullSecrets: []
 
