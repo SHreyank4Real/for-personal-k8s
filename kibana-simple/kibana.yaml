@@ -1,3 +1,42 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kibana-basic-auth
+  labels:
+    app: kibana
+type: Opaque
+stringData:
+  # Default credentials: admin / changeme
+  auth: |
+    admin:$apr1$/DD4VC1x$f96t21cW9SxHzbA7hicm71
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-nginx-config
+  labels:
+    app: kibana
+data:
+  default.conf: |
+    server {
+      listen 8080;
+      server_name _;
+
+      auth_basic "Kibana Login";
+      auth_basic_user_file /etc/nginx/auth/auth;
+
+      location / {
+        proxy_pass http://127.0.0.1:5601;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+      }
+    }
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,6 +71,25 @@ spec:
             limits:
               cpu: 500m
               memory: 1Gi
+        - name: kibana-auth-proxy
+          image: nginx:alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+            - name: basic-auth
+              mountPath: /etc/nginx/auth
+              readOnly: true
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: kibana-nginx-config
+        - name: basic-auth
+          secret:
+            secretName: kibana-basic-auth
 ---
 apiVersion: v1
 kind: Service
@@ -45,6 +103,6 @@ spec:
     app: kibana
   ports:
     - name: http
-      port: 5601
-      targetPort: 5601
+      port: 80
+      targetPort: 8080
       nodePort: 30005
