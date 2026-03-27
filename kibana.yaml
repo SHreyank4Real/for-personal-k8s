@@ -10,10 +10,7 @@ spec:
   source:
     repoURL: git@github.com:SHreyank4Real/for-personal-k8s.git
     targetRevision: main
-    path: kibana
-    helm:
-      valueFiles:
-        - sh-value.yaml
+    path: kibana-simple
   destination:
     server: https://kubernetes.default.svc
     namespace: logging
