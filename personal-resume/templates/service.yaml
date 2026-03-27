@@ -6,8 +6,8 @@ spec:
   type: {{ .Values.service.type }} 
   ports:
     - name: http
-      port: {{ .Values.contianer.port }}
-      targetPort: {{ .Values.contianer.port }}
+      port: {{ .Values.container.port }}
+      targetPort: {{ .Values.container.port }}
       nodePort: {{ .Values.service.nodePortPort }} 
       protocol: TCP
   selector:

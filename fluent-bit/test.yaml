@@ -76,9 +76,7 @@ config:
         Logstash_Format     On
         Logstash_Prefix     resume-logs
         Logstash_DateFormat %m-%Y
-        Type                _doc
-        Suppress_Type_Name  On
-        Pipeline            geoip-info
+        Retry_Limit         False
 
 resources:
   limits:

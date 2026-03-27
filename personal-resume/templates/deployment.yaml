@@ -19,23 +19,23 @@ spec:
           image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.contianer.port }}
+            - containerPort: {{ .Values.container.port }}
           resources:
             requests:
-              cpu: {{ .Values.contianer.cpuReq }}
-              memory: {{ .Values.contianer.memoryReq }}
+              cpu: {{ .Values.container.cpuReq }}
+              memory: {{ .Values.container.memoryReq }}
             limits:
-              cpu: {{ .Values.contianer.cpuLim }}
-              memory: {{ .Values.contianer.memoryLim }}
+              cpu: {{ .Values.container.cpuLim }}
+              memory: {{ .Values.container.memoryLim }}
           # livenessProbe:
           #   httpGet:
           #     path: /
-          #     port: {{ .Values.contianer.port }}
+          #     port: {{ .Values.container.port }}
           #   initialDelaySeconds: 15
           #   periodSeconds: 10
           # readinessProbe:
           #   httpGet:
           #     path: /
-          #     port: {{ .Values.contianer.port }}
+          #     port: {{ .Values.container.port }}
           #   initialDelaySeconds: 15
           #   periodSeconds: 5

@@ -6,7 +6,7 @@ metadata:
 spec:
   hard:
     pods: "{{ .Values.replicaCount }}"
-    requests.cpu: {{ .Values.contianer.cpuReq }}
-    requests.memory: {{ .Values.contianer.memoryReq }}
-    limits.cpu: {{ .Values.contianer.cpuLim }}
-    limits.memory: {{ .Values.contianer.memoryLim }}
+    requests.cpu: {{ .Values.container.cpuReq }}
+    requests.memory: {{ .Values.container.memoryReq }}
+    limits.cpu: {{ .Values.container.cpuLim }}
+    limits.memory: {{ .Values.container.memoryLim }}

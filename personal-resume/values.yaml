@@ -10,7 +10,7 @@ image:
 
 imagePullSecrets: []
 
-contianer:
+container:
   port: 80
   memoryReq: "32Mi"
   memoryLim: "64Mi"
