@@ -76,6 +76,7 @@ config:
         Logstash_Format     On
         Logstash_Prefix     resume-logs
         Logstash_DateFormat %m-%Y
+        Suppress_Type_Name  On
         Retry_Limit         False
 
 resources:
